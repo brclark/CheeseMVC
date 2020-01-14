@@ -15,19 +15,19 @@
             <th>Remove</th>
             <th>Name</th>
             <th>Description</th>
-            <th>Type</th>
+            <th>Category</th>
             <th>Rating</th>
             <th>Edit</th>
         </tr>
     @foreach(var cheese in Model)
     {
         <tr>
-            <td><input type="checkbox" name="cheeseIds" value="@cheese.CheeseId" /></td>
+            <td><input type="checkbox" name="cheeseIds" value="@cheese.ID" /></td>
             <td>@cheese.Name</td>
             <td>@cheese.Description</td>
-            <td>@cheese.Type</td>
+            <td>@cheese.Category.Name</td>
             <td>@cheese.Rating</td>
-            <td><a asp-controller="Cheese" asp-action="Edit" asp-route-cheeseId="@cheese.CheeseId">edit</a></td>
+            <td><a asp-controller="Cheese" asp-action="Edit" asp-route-cheeseId="@cheese.ID">edit</a></td>
         </tr>
     }
     </table>

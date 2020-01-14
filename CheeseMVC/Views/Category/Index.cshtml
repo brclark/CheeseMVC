@@ -1,0 +1,29 @@
+﻿
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+        $.getJSON("/Category/GetCategories",
+            function (json) {
+                var tr;
+                for (var i = 0; i < json.length; i++) {
+                    tr = $('<tr/>');
+                    tr.append("<td>" + json[i].name + "</td>");
+                    tr.append("<td><form method='post' asp-controller='Category' asp-action='Delete' asp-route-id='" +
+                        json[i].id + "' data-ajax='true'><button type='submit' class='delete btn btn-danger'>Delete</button></form>");
+                    $('table').append(tr);
+                }
+            })
+    })
+</script>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Category Name</th>
+            <th>Remove</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<p><a asp-controller="Category" asp-action="Add">Add Category</a></p>
