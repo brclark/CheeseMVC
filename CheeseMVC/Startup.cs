@@ -1,8 +1,11 @@
+using CheeseMVC.Authorization;
 using CheeseMVC.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,12 +25,11 @@ namespace CheeseMVC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CheeseDbContext>(options =>
+            services.AddEntityFrameworkSqlite().AddDbContext<CheeseDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("CheeseDbContextConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<CheeseDbContext>();
-
-            services.AddDistributedMemoryCache();
 
             services.AddSession(options =>
             {
@@ -36,12 +38,22 @@ namespace CheeseMVC
                 options.Cookie.IsEssential = true;
             });
 
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            services.AddControllersWithViews(config =>
+            {
+                   var policy = new AuthorizationPolicyBuilder()
+                                    .RequireAuthenticatedUser()
+                                    .Build();
+                   config.Filters.Add(new AuthorizeFilter(policy));
+            });
+
+            services.AddScoped<IAuthorizationHandler, MemberUserAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, AdminUserAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            CheeseDbContext context, RoleManager<IdentityRole> roleManager,
+            UserManager<IdentityUser> userManager)
         {
             if (env.IsDevelopment())
             {
@@ -68,6 +80,8 @@ namespace CheeseMVC
                     pattern: "{controller=Cheese}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            SeedData.Initialize(context, userManager, roleManager).Wait();
         }
     }
 }

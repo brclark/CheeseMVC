@@ -17,6 +17,7 @@ namespace CheeseMVC.Data
         {
             modelBuilder.Entity<CheeseMenu>()
                 .HasKey(c => new { c.CheeseID, c.MenuID });
+
             base.OnModelCreating(modelBuilder);
         }
 

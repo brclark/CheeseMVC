@@ -14,6 +14,7 @@
     <Folder Include="Data\" />
     <Folder Include="Views\Category\" />
     <Folder Include="Views\Menu\" />
+    <Folder Include="Authorization\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Models\Queso.cs" />

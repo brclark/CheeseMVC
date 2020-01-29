@@ -27,7 +27,15 @@
             <td>@cheese.Description</td>
             <td>@cheese.Category.Name</td>
             <td>@cheese.Rating</td>
-            <td><a asp-controller="Cheese" asp-action="Edit" asp-route-cheeseId="@cheese.ID">edit</a></td>
+            <td>
+                @if ((await AuthorizationService.AuthorizeAsync(User, cheese, CheeseOperations.Update)).Succeeded)
+                {
+                    <a asp-controller="Cheese" asp-action="Edit" asp-route-cheeseId="@cheese.ID">edit</a>
+                } else
+                {
+                    <p>-</p>
+                }
+            </td>
         </tr>
     }
     </table>
